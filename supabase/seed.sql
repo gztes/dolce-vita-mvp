@@ -1,0 +1,2 @@
+-- Seed data (optional)
+-- insert into public.profiles (id, email, full_name) values ('00000000-0000-0000-0000-000000000000', 'test@example.com', 'Test User');
