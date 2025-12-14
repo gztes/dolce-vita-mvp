@@ -30,6 +30,9 @@
       "expo-secure-store"
     ],
     "scheme": "dolcevita",
+    "experiments": {
+      "typedRoutes": true
+    },
     "extra": {
       "router": {
         "origin": false
