@@ -43,6 +43,9 @@ function DolceScreenContent() {
   const [planGenerated, setPlanGenerated] = useState(false);
   const [planLines, setPlanLines] = useState<string[]>([]);
   const [input, setInput] = useState('');
+  const [showRealInputs, setShowRealInputs] = useState(false);
+  const [calendarText, setCalendarText] = useState('');
+  const [tasksText, setTasksText] = useState('');
   
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
@@ -81,6 +84,22 @@ function DolceScreenContent() {
       console.log('Input submitted:', input);
       setInput('');
     }
+  };
+
+  const handleUseRealPlan = () => {
+    setMessages((prev) => [
+      ...prev,
+      { role: 'system', text: 'Thanks. Generating your real plan now...' },
+    ]);
+
+    setTimeout(() => {
+      const stubPlan = [
+        `(stub) Your calendar: ${calendarText}`,
+        ...tasksText.split('\n').filter(line => line.trim()).map(task => `- ${task}`),
+      ];
+      setPlanLines(stubPlan);
+      setShowRealInputs(false);
+    }, 1000);
   };
 
   return (
@@ -157,12 +176,53 @@ function DolceScreenContent() {
 
       {/* Bottom Area */}
       <View className="px-4 pb-6 pt-4 border-t border-gray-200">
+        {/* Real Inputs Section */}
+        {planGenerated && showRealInputs && (
+          <View className="mb-4">
+            <TextInput
+              className="bg-gray-100 px-4 py-3 rounded-xl text-base text-gray-900 mb-3"
+              placeholder="Paste today's calendar (e.g. 09:00–10:00 Team call)"
+              placeholderTextColor="#9CA3AF"
+              value={calendarText}
+              onChangeText={setCalendarText}
+              multiline
+              numberOfLines={3}
+            />
+            <TextInput
+              className="bg-gray-100 px-4 py-3 rounded-xl text-base text-gray-900 mb-3"
+              placeholder="Paste your tasks (one per line)"
+              placeholderTextColor="#9CA3AF"
+              value={tasksText}
+              onChangeText={setTasksText}
+              multiline
+              numberOfLines={4}
+            />
+            <PrimaryButton
+              label="Use My Real Plan"
+              onPress={handleUseRealPlan}
+            />
+          </View>
+        )}
+
+        {/* Try Real Calendar Button */}
+        {planGenerated && !showRealInputs && (
+          <TouchableOpacity
+            className="bg-white border border-gray-300 py-3 rounded-xl items-center mb-3"
+            onPress={() => setShowRealInputs(true)}
+          >
+            <Text className="text-gray-900 text-base font-medium">
+              Try with my real calendar & tasks
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Main Bottom Action */}
         {!planGenerated ? (
           <PrimaryButton
             label="Yes — Plan My Day"
             onPress={handlePlanMyDay}
           />
-        ) : (
+        ) : !showRealInputs ? (
           <TextInput
             className="bg-gray-100 px-4 py-3 rounded-xl text-base text-gray-900"
             placeholder="Try /add task Email Marie or /skip Q4 report"
@@ -172,7 +232,7 @@ function DolceScreenContent() {
             onSubmitEditing={handleSubmitInput}
             returnKeyType="send"
           />
-        )}
+        ) : null}
       </View>
 
       {/* Bottom Sheet */}
