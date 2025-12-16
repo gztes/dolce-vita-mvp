@@ -2,6 +2,9 @@ import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, TextInput } fro
 import { useState, useRef } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet, { BottomSheetModalProvider, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import ChatMessage from '@/components/ChatMessage';
+import PlanCard from '@/components/PlanCard';
+import PrimaryButton from '@/components/PrimaryButton';
 
 type Message = {
   role: 'system' | 'user';
@@ -44,13 +47,11 @@ function DolceScreenContent() {
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   const handlePlanMyDay = () => {
-    // Add user message
     setMessages((prev) => [
       ...prev,
       { role: 'user', text: 'Yes — Plan My Day' },
     ]);
 
-    // After 500ms, generate plan
     setTimeout(() => {
       setPlanLines(fakePlan);
       setPlanGenerated(true);
@@ -62,13 +63,11 @@ function DolceScreenContent() {
   };
 
   const handleAction = (actionLabel: string) => {
-    // Add user message
     setMessages((prev) => [
       ...prev,
       { role: 'user', text: actionLabel },
     ]);
 
-    // After 500ms, add system response
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,
@@ -104,43 +103,15 @@ function DolceScreenContent() {
         contentContainerStyle={{ paddingBottom: 20 }}
       >
         {messages.map((message, index) => (
-          <View
+          <ChatMessage
             key={index}
-            className={`mb-3 ${
-              message.role === 'user' ? 'items-end' : 'items-start'
-            }`}
-          >
-            <View
-              className={`max-w-[80%] px-4 py-3 rounded-2xl ${
-                message.role === 'system'
-                  ? 'bg-blue-100'
-                  : 'bg-gray-200'
-              }`}
-            >
-              <Text className="text-base text-gray-900">
-                {message.text}
-              </Text>
-            </View>
-          </View>
+            role={message.role}
+            text={message.text}
+          />
         ))}
 
         {/* Plan Card */}
-        {planGenerated && (
-          <View className="mt-4 bg-gray-50 border border-gray-200 rounded-2xl p-4">
-            {planLines.map((line, index) => (
-              <Text
-                key={index}
-                className={`text-sm leading-6 ${
-                  line.startsWith('Auto-deferred')
-                    ? 'text-gray-500 italic mt-2'
-                    : 'text-gray-900'
-                }`}
-              >
-                {line}
-              </Text>
-            ))}
-          </View>
-        )}
+        {planGenerated && <PlanCard lines={planLines} />}
 
         {/* Action Buttons */}
         {planGenerated && (
@@ -187,17 +158,11 @@ function DolceScreenContent() {
       {/* Bottom Area */}
       <View className="px-4 pb-6 pt-4 border-t border-gray-200">
         {!planGenerated ? (
-          // Show button before plan is generated
-          <TouchableOpacity
-            className="bg-black py-4 rounded-xl items-center"
+          <PrimaryButton
+            label="Yes — Plan My Day"
             onPress={handlePlanMyDay}
-          >
-            <Text className="text-white text-lg font-semibold">
-              Yes — Plan My Day
-            </Text>
-          </TouchableOpacity>
+          />
         ) : (
-          // Show input after plan is generated
           <TextInput
             className="bg-gray-100 px-4 py-3 rounded-xl text-base text-gray-900"
             placeholder="Try /add task Email Marie or /skip Q4 report"
