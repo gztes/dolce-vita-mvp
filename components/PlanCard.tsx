@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { Text } from 'react-native';
 import { useEffect } from 'react';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
@@ -34,8 +34,7 @@ export default function PlanCard({ lines, shouldPulse }: PlanCardProps) {
 
   return (
     <Animated.View 
-      style={animatedStyle}
-      className="mt-4 bg-gray-50 border border-gray-200 rounded-2xl p-4"
+      style={[animatedStyle, { marginTop: 16, backgroundColor: '#F9FAFB', borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 16, padding: 16 }]}
     >
       {lines.map((line, index) => (
         <Text
