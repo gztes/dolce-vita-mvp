@@ -1,7 +1,5 @@
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
-import { useState, useRef } from 'react';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { BottomSheetModalProvider, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, TextInput, StyleSheet, Modal } from 'react-native';
+import { useState } from 'react';
 import ChatMessage from '@/components/ChatMessage';
 import PlanCard from '@/components/PlanCard';
 import PrimaryButton from '@/components/PrimaryButton';
@@ -36,7 +34,7 @@ const fakeTasks = [
   'Write 3 ideas for blog',
 ];
 
-function DolceScreenContent() {
+export default function DolceScreen() {
   const [messages, setMessages] = useState<Message[]>([
     { role: 'system', text: 'Hey, want me to plan your day?' },
   ]);
@@ -46,9 +44,7 @@ function DolceScreenContent() {
   const [showRealInputs, setShowRealInputs] = useState(false);
   const [calendarText, setCalendarText] = useState('');
   const [tasksText, setTasksText] = useState('');
-  const [shouldPulse, setShouldPulse] = useState(false);
-  
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const [showContextModal, setShowContextModal] = useState(false);
 
   const handlePlanMyDay = () => {
     setMessages((prev) => [
@@ -77,8 +73,6 @@ function DolceScreenContent() {
         ...prev,
         { role: 'system', text: 'Done. Your day has been reflowed.' },
       ]);
-      setShouldPulse(true);
-      setTimeout(() => setShouldPulse(false), 300);
     }, 500);
   };
 
@@ -111,7 +105,7 @@ function DolceScreenContent() {
       <View style={styles.contextButtonContainer}>
         <TouchableOpacity
           style={styles.contextButton}
-          onPress={() => bottomSheetRef.current?.present()}
+          onPress={() => setShowContextModal(true)}
         >
           <Text style={styles.contextButtonText}>Today's Context</Text>
         </TouchableOpacity>
@@ -131,7 +125,7 @@ function DolceScreenContent() {
         ))}
 
         {/* Plan Card */}
-        {planGenerated && <PlanCard lines={planLines} shouldPulse={shouldPulse} />}
+        {planGenerated && <PlanCard lines={planLines} />}
 
         {/* Action Buttons */}
         {planGenerated && (
@@ -230,37 +224,37 @@ function DolceScreenContent() {
         ) : null}
       </View>
 
-      {/* Bottom Sheet */}
-      <BottomSheetModal
-        ref={bottomSheetRef}
-        snapPoints={['50%']}
-        enablePanDownToClose
+      {/* Context Modal (replaces Bottom Sheet) */}
+      <Modal
+        visible={showContextModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowContextModal(false)}
       >
-        <BottomSheetView style={styles.bottomSheet}>
-          <ScrollView>
-            <Text style={styles.sheetTitle}>Calendar</Text>
-            {fakeCalendar.map((event, index) => (
-              <Text key={index} style={styles.sheetItem}>{event}</Text>
-            ))}
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Today's Context</Text>
+              <TouchableOpacity onPress={() => setShowContextModal(false)}>
+                <Text style={styles.closeButton}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            
+            <ScrollView style={styles.modalScroll}>
+              <Text style={styles.sheetTitle}>Calendar</Text>
+              {fakeCalendar.map((event, index) => (
+                <Text key={index} style={styles.sheetItem}>{event}</Text>
+              ))}
 
-            <Text style={[styles.sheetTitle, styles.sheetTitleSpacing]}>Tasks</Text>
-            {fakeTasks.map((task, index) => (
-              <Text key={index} style={styles.sheetItem}>• {task}</Text>
-            ))}
-          </ScrollView>
-        </BottomSheetView>
-      </BottomSheetModal>
+              <Text style={[styles.sheetTitle, styles.sheetTitleSpacing]}>Tasks</Text>
+              {fakeTasks.map((task, index) => (
+                <Text key={index} style={styles.sheetItem}>• {task}</Text>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
-  );
-}
-
-export default function DolceScreen() {
-  return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <BottomSheetModalProvider>
-        <DolceScreenContent />
-      </BottomSheetModalProvider>
-    </GestureHandlerRootView>
   );
 }
 
@@ -352,13 +346,41 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  bottomSheet: {
+  modalOverlay: {
     flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     paddingHorizontal: 24,
-    paddingVertical: 16,
+    paddingTop: 20,
+    paddingBottom: 40,
+    maxHeight: '50%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#111827',
+  },
+  closeButton: {
+    fontSize: 24,
+    color: '#6B7280',
+    fontWeight: 'bold',
+  },
+  modalScroll: {
+    maxHeight: 300,
   },
   sheetTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#111827',
     marginBottom: 12,
