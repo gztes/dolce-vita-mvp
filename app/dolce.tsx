@@ -1,5 +1,7 @@
 import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, TextInput } from 'react-native';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import BottomSheet, { BottomSheetModalProvider, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 
 type Message = {
   role: 'system' | 'user';
@@ -17,13 +19,29 @@ const fakePlan = [
   'Auto-deferred to Tomorrow: Research new AI tools, Check team feedback',
 ];
 
-export default function DolceScreen() {
+const fakeCalendar = [
+  '09:00–10:00 Meeting',
+  '12:30–13:30 Lunch',
+  '15:00–16:00 Call',
+];
+
+const fakeTasks = [
+  'Finish monthly report',
+  'Email client',
+  'Review designs',
+  'Clean up inbox',
+  'Write 3 ideas for blog',
+];
+
+function DolceScreenContent() {
   const [messages, setMessages] = useState<Message[]>([
     { role: 'system', text: 'Hey, want me to plan your day?' },
   ]);
   const [planGenerated, setPlanGenerated] = useState(false);
   const [planLines, setPlanLines] = useState<string[]>([]);
   const [input, setInput] = useState('');
+  
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   const handlePlanMyDay = () => {
     // Add user message
@@ -68,6 +86,18 @@ export default function DolceScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
+      {/* Top-right pill button */}
+      <View className="absolute top-12 right-4 z-10">
+        <TouchableOpacity
+          className="bg-blue-500 px-4 py-2 rounded-full"
+          onPress={() => bottomSheetRef.current?.present()}
+        >
+          <Text className="text-white text-sm font-medium">
+            Today's Context
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Messages Area */}
       <ScrollView 
         className="flex-1 px-4 pt-4"
@@ -179,6 +209,47 @@ export default function DolceScreen() {
           />
         )}
       </View>
+
+      {/* Bottom Sheet */}
+      <BottomSheetModal
+        ref={bottomSheetRef}
+        snapPoints={['50%']}
+        enablePanDownToClose
+      >
+        <BottomSheetView className="flex-1 px-6 py-4">
+          <ScrollView>
+            {/* Calendar Section */}
+            <Text className="text-xl font-bold text-gray-900 mb-3">
+              Calendar
+            </Text>
+            {fakeCalendar.map((event, index) => (
+              <Text key={index} className="text-base text-gray-700 mb-2">
+                {event}
+              </Text>
+            ))}
+
+            {/* Tasks Section */}
+            <Text className="text-xl font-bold text-gray-900 mt-6 mb-3">
+              Tasks
+            </Text>
+            {fakeTasks.map((task, index) => (
+              <Text key={index} className="text-base text-gray-700 mb-2">
+                • {task}
+              </Text>
+            ))}
+          </ScrollView>
+        </BottomSheetView>
+      </BottomSheetModal>
     </SafeAreaView>
+  );
+}
+
+export default function DolceScreen() {
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
+        <DolceScreenContent />
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 }
