@@ -46,6 +46,7 @@ function DolceScreenContent() {
   const [showRealInputs, setShowRealInputs] = useState(false);
   const [calendarText, setCalendarText] = useState('');
   const [tasksText, setTasksText] = useState('');
+  const [shouldPulse, setShouldPulse] = useState(false);
   
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
@@ -76,6 +77,9 @@ function DolceScreenContent() {
         ...prev,
         { role: 'system', text: 'Done. Your day has been reflowed.' },
       ]);
+      // Trigger pulse animation
+      setShouldPulse(true);
+      setTimeout(() => setShouldPulse(false), 300);
     }, 500);
   };
 
@@ -130,7 +134,7 @@ function DolceScreenContent() {
         ))}
 
         {/* Plan Card */}
-        {planGenerated && <PlanCard lines={planLines} />}
+        {planGenerated && <PlanCard lines={planLines} shouldPulse={shouldPulse} />}
 
         {/* Action Buttons */}
         {planGenerated && (

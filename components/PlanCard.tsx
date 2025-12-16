@@ -1,12 +1,42 @@
 import { View, Text } from 'react-native';
+import { useEffect } from 'react';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 type PlanCardProps = {
   lines: string[];
+  shouldPulse?: boolean;
 };
 
-export default function PlanCard({ lines }: PlanCardProps) {
+export default function PlanCard({ lines, shouldPulse }: PlanCardProps) {
+  const opacity = useSharedValue(0);
+  const scale = useSharedValue(0.97);
+  const pulseOpacity = useSharedValue(1);
+
+  useEffect(() => {
+    // Initial fade-in and scale animation
+    opacity.value = withTiming(1, { duration: 200 });
+    scale.value = withTiming(1, { duration: 200 });
+  }, []);
+
+  useEffect(() => {
+    // Pulse animation when shouldPulse changes
+    if (shouldPulse) {
+      pulseOpacity.value = withTiming(0.7, { duration: 100 }, () => {
+        pulseOpacity.value = withTiming(1, { duration: 100 });
+      });
+    }
+  }, [shouldPulse]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value * pulseOpacity.value,
+    transform: [{ scale: scale.value }],
+  }));
+
   return (
-    <View className="mt-4 bg-gray-50 border border-gray-200 rounded-2xl p-4">
+    <Animated.View 
+      style={animatedStyle}
+      className="mt-4 bg-gray-50 border border-gray-200 rounded-2xl p-4"
+    >
       {lines.map((line, index) => (
         <Text
           key={index}
@@ -19,6 +49,6 @@ export default function PlanCard({ lines }: PlanCardProps) {
           {line}
         </Text>
       ))}
-    </View>
+    </Animated.View>
   );
 }
