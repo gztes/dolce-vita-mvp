@@ -23,6 +23,7 @@ function RootLayoutNav() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="(auth)" />
+      <Stack.Screen name="dolce" />
       <Stack.Screen name="check-in" />
       <Stack.Screen name="today" />
       <Stack.Screen name="reflection" />
