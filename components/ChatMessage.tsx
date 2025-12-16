@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 type ChatMessageProps = {
   role: 'system' | 'user';
@@ -7,22 +7,38 @@ type ChatMessageProps = {
 
 export default function ChatMessage({ role, text }: ChatMessageProps) {
   return (
-    <View
-      className={`mb-3 ${
-        role === 'user' ? 'items-end' : 'items-start'
-      }`}
-    >
-      <View
-        className={`max-w-[80%] px-4 py-3 rounded-2xl ${
-          role === 'system'
-            ? 'bg-blue-100'
-            : 'bg-gray-200'
-        }`}
-      >
-        <Text className="text-base text-gray-900">
-          {text}
-        </Text>
+    <View style={[styles.container, role === 'user' ? styles.userContainer : styles.systemContainer]}>
+      <View style={[styles.bubble, role === 'system' ? styles.systemBubble : styles.userBubble]}>
+        <Text style={styles.text}>{text}</Text>
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 12,
+  },
+  userContainer: {
+    alignItems: 'flex-end',
+  },
+  systemContainer: {
+    alignItems: 'flex-start',
+  },
+  bubble: {
+    maxWidth: '80%',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 16,
+  },
+  systemBubble: {
+    backgroundColor: '#DBEAFE', // blue-100
+  },
+  userBubble: {
+    backgroundColor: '#E5E7EB', // gray-200
+  },
+  text: {
+    fontSize: 16,
+    color: '#111827', // gray-900
+  },
+});

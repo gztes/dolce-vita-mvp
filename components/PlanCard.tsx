@@ -1,4 +1,4 @@
-import { Text } from 'react-native';
+import { Text, StyleSheet } from 'react-native';
 import { useEffect } from 'react';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence } from 'react-native-reanimated';
 
@@ -34,17 +34,14 @@ export default function PlanCard({ lines, shouldPulse }: PlanCardProps) {
   }));
 
   return (
-    <Animated.View 
-      style={[animatedStyle, { marginTop: 16, backgroundColor: '#F9FAFB', borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 16, padding: 16 }]}
-    >
+    <Animated.View style={[styles.card, animatedStyle]}>
       {lines.map((line, index) => (
         <Text
           key={index}
-          className={`text-sm leading-6 ${
-            line.startsWith('Auto-deferred')
-              ? 'text-gray-500 italic mt-2'
-              : 'text-gray-900'
-          }`}
+          style={[
+            styles.line,
+            line.startsWith('Auto-deferred') && styles.deferredLine
+          ]}
         >
           {line}
         </Text>
@@ -52,3 +49,24 @@ export default function PlanCard({ lines, shouldPulse }: PlanCardProps) {
     </Animated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    marginTop: 16,
+    backgroundColor: '#F9FAFB', // gray-50
+    borderWidth: 1,
+    borderColor: '#E5E7EB', // gray-200
+    borderRadius: 16,
+    padding: 16,
+  },
+  line: {
+    fontSize: 14,
+    lineHeight: 24,
+    color: '#111827', // gray-900
+  },
+  deferredLine: {
+    color: '#6B7280', // gray-500
+    fontStyle: 'italic',
+    marginTop: 8,
+  },
+});

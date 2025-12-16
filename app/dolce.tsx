@@ -1,7 +1,7 @@
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import { useState, useRef } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import BottomSheet, { BottomSheetModalProvider, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetModalProvider, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import ChatMessage from '@/components/ChatMessage';
 import PlanCard from '@/components/PlanCard';
 import PrimaryButton from '@/components/PrimaryButton';
@@ -77,7 +77,6 @@ function DolceScreenContent() {
         ...prev,
         { role: 'system', text: 'Done. Your day has been reflowed.' },
       ]);
-      // Trigger pulse animation
       setShouldPulse(true);
       setTimeout(() => setShouldPulse(false), 300);
     }, 500);
@@ -107,23 +106,21 @@ function DolceScreenContent() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView style={styles.container}>
       {/* Top-right pill button */}
-      <View className="absolute top-12 right-4 z-10">
+      <View style={styles.contextButtonContainer}>
         <TouchableOpacity
-          className="bg-blue-500 px-4 py-2 rounded-full"
+          style={styles.contextButton}
           onPress={() => bottomSheetRef.current?.present()}
         >
-          <Text className="text-white text-sm font-medium">
-            Today's Context
-          </Text>
+          <Text style={styles.contextButtonText}>Today's Context</Text>
         </TouchableOpacity>
       </View>
 
       {/* Messages Area */}
       <ScrollView 
-        className="flex-1 px-4 pt-4"
-        contentContainerStyle={{ paddingBottom: 20 }}
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
       >
         {messages.map((message, index) => (
           <ChatMessage
@@ -138,53 +135,45 @@ function DolceScreenContent() {
 
         {/* Action Buttons */}
         {planGenerated && (
-          <View className="mt-4 flex-row flex-wrap gap-2">
+          <View style={styles.actionButtons}>
             <TouchableOpacity
-              className="bg-white border border-gray-300 px-4 py-2 rounded-lg"
+              style={styles.actionButton}
               onPress={() => handleAction('Skip a Task')}
             >
-              <Text className="text-gray-900 text-sm font-medium">
-                Skip a Task
-              </Text>
+              <Text style={styles.actionButtonText}>Skip a Task</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="bg-white border border-gray-300 px-4 py-2 rounded-lg"
+              style={styles.actionButton}
               onPress={() => handleAction('Add Something')}
             >
-              <Text className="text-gray-900 text-sm font-medium">
-                Add Something
-              </Text>
+              <Text style={styles.actionButtonText}>Add Something</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="bg-white border border-gray-300 px-4 py-2 rounded-lg"
+              style={styles.actionButton}
               onPress={() => handleAction('Move Something')}
             >
-              <Text className="text-gray-900 text-sm font-medium">
-                Move Something
-              </Text>
+              <Text style={styles.actionButtonText}>Move Something</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="bg-white border border-gray-300 px-4 py-2 rounded-lg"
+              style={styles.actionButton}
               onPress={() => handleAction('Replan My Day')}
             >
-              <Text className="text-gray-900 text-sm font-medium">
-                Replan My Day
-              </Text>
+              <Text style={styles.actionButtonText}>Replan My Day</Text>
             </TouchableOpacity>
           </View>
         )}
       </ScrollView>
 
       {/* Bottom Area */}
-      <View className="px-4 pb-6 pt-4 border-t border-gray-200">
+      <View style={styles.bottomArea}>
         {/* Real Inputs Section */}
         {planGenerated && showRealInputs && (
-          <View className="mb-4">
+          <View style={styles.realInputsSection}>
             <TextInput
-              className="bg-gray-100 px-4 py-3 rounded-xl text-base text-gray-900 mb-3"
+              style={[styles.input, styles.multilineInput]}
               placeholder="Paste today's calendar (e.g. 09:00–10:00 Team call)"
               placeholderTextColor="#9CA3AF"
               value={calendarText}
@@ -193,7 +182,7 @@ function DolceScreenContent() {
               numberOfLines={3}
             />
             <TextInput
-              className="bg-gray-100 px-4 py-3 rounded-xl text-base text-gray-900 mb-3"
+              style={[styles.input, styles.multilineInput, styles.inputSpacing]}
               placeholder="Paste your tasks (one per line)"
               placeholderTextColor="#9CA3AF"
               value={tasksText}
@@ -201,20 +190,22 @@ function DolceScreenContent() {
               multiline
               numberOfLines={4}
             />
-            <PrimaryButton
-              label="Use My Real Plan"
-              onPress={handleUseRealPlan}
-            />
+            <View style={styles.inputSpacing}>
+              <PrimaryButton
+                label="Use My Real Plan"
+                onPress={handleUseRealPlan}
+              />
+            </View>
           </View>
         )}
 
         {/* Try Real Calendar Button */}
         {planGenerated && !showRealInputs && (
           <TouchableOpacity
-            className="bg-white border border-gray-300 py-3 rounded-xl items-center mb-3"
+            style={styles.tryRealButton}
             onPress={() => setShowRealInputs(true)}
           >
-            <Text className="text-gray-900 text-base font-medium">
+            <Text style={styles.tryRealButtonText}>
               Try with my real calendar & tasks
             </Text>
           </TouchableOpacity>
@@ -228,7 +219,7 @@ function DolceScreenContent() {
           />
         ) : !showRealInputs ? (
           <TextInput
-            className="bg-gray-100 px-4 py-3 rounded-xl text-base text-gray-900"
+            style={styles.input}
             placeholder="Try /add task Email Marie or /skip Q4 report"
             placeholderTextColor="#9CA3AF"
             value={input}
@@ -245,26 +236,16 @@ function DolceScreenContent() {
         snapPoints={['50%']}
         enablePanDownToClose
       >
-        <BottomSheetView className="flex-1 px-6 py-4">
+        <BottomSheetView style={styles.bottomSheet}>
           <ScrollView>
-            {/* Calendar Section */}
-            <Text className="text-xl font-bold text-gray-900 mb-3">
-              Calendar
-            </Text>
+            <Text style={styles.sheetTitle}>Calendar</Text>
             {fakeCalendar.map((event, index) => (
-              <Text key={index} className="text-base text-gray-700 mb-2">
-                {event}
-              </Text>
+              <Text key={index} style={styles.sheetItem}>{event}</Text>
             ))}
 
-            {/* Tasks Section */}
-            <Text className="text-xl font-bold text-gray-900 mt-6 mb-3">
-              Tasks
-            </Text>
+            <Text style={[styles.sheetTitle, styles.sheetTitleSpacing]}>Tasks</Text>
             {fakeTasks.map((task, index) => (
-              <Text key={index} className="text-base text-gray-700 mb-2">
-                • {task}
-              </Text>
+              <Text key={index} style={styles.sheetItem}>• {task}</Text>
             ))}
           </ScrollView>
         </BottomSheetView>
@@ -282,3 +263,112 @@ export default function DolceScreen() {
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  contextButtonContainer: {
+    position: 'absolute',
+    top: 48,
+    right: 16,
+    zIndex: 10,
+  },
+  contextButton: {
+    backgroundColor: '#3B82F6',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 9999,
+  },
+  contextButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  scrollContent: {
+    paddingBottom: 20,
+  },
+  actionButtons: {
+    marginTop: 16,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  actionButton: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  actionButtonText: {
+    color: '#111827',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  bottomArea: {
+    paddingHorizontal: 16,
+    paddingBottom: 24,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
+  },
+  realInputsSection: {
+    marginBottom: 16,
+  },
+  input: {
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    fontSize: 16,
+    color: '#111827',
+  },
+  multilineInput: {
+    minHeight: 80,
+    textAlignVertical: 'top',
+  },
+  inputSpacing: {
+    marginTop: 12,
+  },
+  tryRealButton: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  tryRealButtonText: {
+    color: '#111827',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  bottomSheet: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+  },
+  sheetTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 12,
+  },
+  sheetTitleSpacing: {
+    marginTop: 24,
+  },
+  sheetItem: {
+    fontSize: 16,
+    color: '#374151',
+    marginBottom: 8,
+  },
+});
