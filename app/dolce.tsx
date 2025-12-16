@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { useState } from 'react';
 
 type Message = {
@@ -23,6 +23,7 @@ export default function DolceScreen() {
   ]);
   const [planGenerated, setPlanGenerated] = useState(false);
   const [planLines, setPlanLines] = useState<string[]>([]);
+  const [input, setInput] = useState('');
 
   const handlePlanMyDay = () => {
     // Add user message
@@ -56,6 +57,13 @@ export default function DolceScreen() {
         { role: 'system', text: 'Done. Your day has been reflowed.' },
       ]);
     }, 500);
+  };
+
+  const handleSubmitInput = () => {
+    if (input.trim()) {
+      console.log('Input submitted:', input);
+      setInput('');
+    }
   };
 
   return (
@@ -146,17 +154,30 @@ export default function DolceScreen() {
         )}
       </ScrollView>
 
-      {/* Bottom Action Button */}
+      {/* Bottom Area */}
       <View className="px-4 pb-6 pt-4 border-t border-gray-200">
-        <TouchableOpacity
-          className="bg-black py-4 rounded-xl items-center"
-          onPress={handlePlanMyDay}
-          disabled={planGenerated}
-        >
-          <Text className="text-white text-lg font-semibold">
-            {planGenerated ? 'Plan Generated' : 'Yes — Plan My Day'}
-          </Text>
-        </TouchableOpacity>
+        {!planGenerated ? (
+          // Show button before plan is generated
+          <TouchableOpacity
+            className="bg-black py-4 rounded-xl items-center"
+            onPress={handlePlanMyDay}
+          >
+            <Text className="text-white text-lg font-semibold">
+              Yes — Plan My Day
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          // Show input after plan is generated
+          <TextInput
+            className="bg-gray-100 px-4 py-3 rounded-xl text-base text-gray-900"
+            placeholder="Try /add task Email Marie or /skip Q4 report"
+            placeholderTextColor="#9CA3AF"
+            value={input}
+            onChangeText={setInput}
+            onSubmitEditing={handleSubmitInput}
+            returnKeyType="send"
+          />
+        )}
       </View>
     </SafeAreaView>
   );
