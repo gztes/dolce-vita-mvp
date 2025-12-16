@@ -1,6 +1,6 @@
 import { Text } from 'react-native';
 import { useEffect } from 'react';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSequence } from 'react-native-reanimated';
 
 type PlanCardProps = {
   lines: string[];
@@ -21,9 +21,10 @@ export default function PlanCard({ lines, shouldPulse }: PlanCardProps) {
   useEffect(() => {
     // Pulse animation when shouldPulse changes
     if (shouldPulse) {
-      pulseOpacity.value = withTiming(0.7, { duration: 100 }, () => {
-        pulseOpacity.value = withTiming(1, { duration: 100 });
-      });
+      pulseOpacity.value = withSequence(
+        withTiming(0.7, { duration: 100 }),
+        withTiming(1, { duration: 100 })
+      );
     }
   }, [shouldPulse]);
 
