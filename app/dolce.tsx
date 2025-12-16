@@ -292,7 +292,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
   },
   actionButton: {
     backgroundColor: '#FFFFFF',
@@ -301,6 +300,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
+    marginRight: 8,
+    marginBottom: 8,
   },
   actionButtonText: {
     color: '#111827',
