@@ -42,6 +42,22 @@ export default function DolceScreen() {
     }, 500);
   };
 
+  const handleAction = (actionLabel: string) => {
+    // Add user message
+    setMessages((prev) => [
+      ...prev,
+      { role: 'user', text: actionLabel },
+    ]);
+
+    // After 500ms, add system response
+    setTimeout(() => {
+      setMessages((prev) => [
+        ...prev,
+        { role: 'system', text: 'Done. Your day has been reflowed.' },
+      ]);
+    }, 500);
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* Messages Area */}
@@ -85,6 +101,47 @@ export default function DolceScreen() {
                 {line}
               </Text>
             ))}
+          </View>
+        )}
+
+        {/* Action Buttons */}
+        {planGenerated && (
+          <View className="mt-4 flex-row flex-wrap gap-2">
+            <TouchableOpacity
+              className="bg-white border border-gray-300 px-4 py-2 rounded-lg"
+              onPress={() => handleAction('Skip a Task')}
+            >
+              <Text className="text-gray-900 text-sm font-medium">
+                Skip a Task
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="bg-white border border-gray-300 px-4 py-2 rounded-lg"
+              onPress={() => handleAction('Add Something')}
+            >
+              <Text className="text-gray-900 text-sm font-medium">
+                Add Something
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="bg-white border border-gray-300 px-4 py-2 rounded-lg"
+              onPress={() => handleAction('Move Something')}
+            >
+              <Text className="text-gray-900 text-sm font-medium">
+                Move Something
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="bg-white border border-gray-300 px-4 py-2 rounded-lg"
+              onPress={() => handleAction('Replan My Day')}
+            >
+              <Text className="text-gray-900 text-sm font-medium">
+                Replan My Day
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
       </ScrollView>
