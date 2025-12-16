@@ -23,7 +23,7 @@
     "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "^0.21.2",
     "nativewind": "^4.1.23",
-    "react-native-reanimated": "~3.16.8",
+    "react-native-reanimated": "~3.19.4",
     "react-native-gesture-handler": "~2.22.0",
     "@gorhom/bottom-sheet": "^5.0.6"
   },
